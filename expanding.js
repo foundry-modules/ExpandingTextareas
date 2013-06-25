@@ -1,15 +1,6 @@
 // Expanding Textareas
 // https://github.com/bgrins/ExpandingTextareas
 
-(function(factory) {
-    // Add jQuery via AMD registration or browser globals
-    if (typeof define === 'function' && define.amd) {
-        define([ 'jquery' ], factory);
-    }
-    else {
-        factory(jQuery);
-    }
-}(function ($) {
     $.expandingTextarea = $.extend({
         autoInitialize: true,
         initialSelector: "textarea.expanding",
@@ -114,5 +105,4 @@
             $($.expandingTextarea.initialSelector).expandingTextarea();
         }
     });
-    
-}));
+
