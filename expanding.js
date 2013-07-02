@@ -41,7 +41,9 @@
     };
     
     function resize() {
-        $(this).closest('.expandingText').find("div").text(this.value.replace(/\r\n/g, "\n") + ' ');
+
+        var clone = $(this).data("textareaClone");
+        clone.find("div").text(this.value.replace(/\r\n/g, "\n") + ' ');
         $(this).trigger("resize.expanding");
     }
     
@@ -55,10 +57,8 @@
         
         if (o === "destroy") {
             this.filter(".expanding-init").each(function() {
+                // TODO: Restore container position value
                 var textarea = $(this).removeClass('expanding-init');
-                var container = textarea.closest('.expandingText');
-                
-                container.before(textarea).remove();
                 textarea
                     .attr('style', textarea.data('expanding-styles') || '')
                     .removeData('expanding-styles');
@@ -68,24 +68,31 @@
         }
         
         this.filter("textarea").not(".expanding-init").addClass("expanding-init").each(function() {
-            var textarea = $(this);
-            
-            textarea.wrap("<div class='expandingText'></div>");
-            textarea.after("<pre class='textareaClone'><div></div></pre>");
-            
-            var container = textarea.parent().css(containerCSS);
-            var pre = container.find("pre").css(preCSS);
+
+            var textarea  = $(this),
+                container = textarea.parent(),
+                clone     = $($.parseHTML("<pre class='textareaClone'><div></div></pre>"));
+
+            textarea
+                .after(clone)
+                .data("textareaClone", clone);
+
+            // Container
+            container.css(containerCSS);
             
             // Store the original styles in case of destroying.
             textarea.data('expanding-styles', textarea.attr('style'));
             textarea.css(textareaCSS);
+
+            // Clone
+            clone.css(preCSS);
             
             $.each(cloneCSSProperties, function(i, p) {
                 var val = textarea.css(p);
                 
                 // Only set if different to prevent overriding percentage css values.
-                if (pre.css(p) !== val) {
-                    pre.css(p, val);
+                if (clone.css(p) !== val) {
+                    clone.css(p, val);
                 }
             });
             
